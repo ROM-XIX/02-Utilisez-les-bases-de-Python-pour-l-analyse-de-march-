@@ -3,3 +3,10 @@
 
 # la documentation de travail
 *.pdf
+
+# les fichiers de données à ne pas inclure
+*.csv
+*.json
+*.jpg
+*.jpeg
+*.html
