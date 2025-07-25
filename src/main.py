@@ -2,13 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import re
+import os
 
 # URL d'une page produit spécifique - product_page_url
-url = "https://books.toscrape.com/catalogue/dune-dune-1_151/index.html"
+url = (
+  "https://books.toscrape.com/catalogue/"
+  "dune-dune-1_151/index.html"
+)
+# url = (
+#     "https://books.toscrape.com/catalogue/"
+#     "a-light-in-the-attic_1000/index.html"
+# )
 
 response = requests.get(url)
 soup = BeautifulSoup(response.content, "html.parser")
-
 
 # - Extraire les données - #
 
@@ -48,11 +55,6 @@ description = description_tag.text if description_tag else "N/A"
 # Catégorie - category
 category = soup.select("ul.breadcrumb li")[2].text.strip()
 
-# image_url
-# image_url = soup.find(
-#     "th",
-#     string="Number of reviews").find_next_sibling("td").text
-
 # Note - review_rating
 rating_tag = soup.select_one("p.star-rating")
 rating = rating_tag.get("class")[1] if rating_tag else "N/A"
@@ -60,6 +62,32 @@ rating = rating_tag.get("class")[1] if rating_tag else "N/A"
 # Nettoyage de la disponibilité
 match = re.search(r"\((\d+) available\)", availability)
 num_available = match.group(1) if match else "N/A"
+
+# Image - récupération par alt = title
+img_tag = soup.find("img", alt=title)
+image_url = img_tag["src"] if img_tag else None
+
+if image_url:
+    image_url_ = "https://books.toscrape.com/" + image_url.replace("../", "")
+
+    # Créer le dossier images s'il n'existe pas
+    image_dir = (
+        "/home/athena6/Documents/OpenClasseRooms/"
+        "02_BaseDeDonnees/images"
+    )
+    os.makedirs(image_dir, exist_ok=True)
+
+    # Télécharger et sauvegarder l'image
+    image_response = requests.get(image_url_)
+    image_path = os.path.join(image_dir, f"{title}.jpg")
+
+    with open(image_path, "wb") as img_file:
+        img_file.write(image_response.content)
+
+    print(f"Image enregistrée dans : {image_path}")
+else:
+    image_url = "N/A"
+    print("Image non trouvée.")
 
 # Nom du fichier de sortie
 filename = (
@@ -84,6 +112,7 @@ with open(filename, mode="w", newline="", encoding="utf-8") as f:
             "Category",
             "Rating",
             "Description",
+            "Image URL"
         ]
     )
 
@@ -100,22 +129,7 @@ with open(filename, mode="w", newline="", encoding="utf-8") as f:
             category,
             rating,
             description,
-        ]
-    )
-
-    writer.writerow(
-        [
-            title,
-            upc,
-            price_excl_tax,
-            price_incl_tax,
-            tax,
-            availability,
-            num_available,
-            num_reviews,
-            category,
-            rating,
-            description,
+            image_url
         ]
     )
 
