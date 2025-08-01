@@ -10,6 +10,10 @@ import re
 import os
 from urllib.parse import urljoin
 
+OUTPUT_DIR_ = (
+        "/home/athena6/Documents/OpenClasseRooms/"
+        "02_BaseDeDonnees/datas"
+    )
 
 BASE_URL = "https://books.toscrape.com/"
 
@@ -182,8 +186,5 @@ def scrape_all_books(output_dir):
 
 # === Lancement ===
 if __name__ == "__main__":
-    OUTPUT_DIR = (
-        "/home/athena6/Documents/OpenClasseRooms/"
-        "02_BaseDeDonnees/datas_"
-    )
+    OUTPUT_DIR = OUTPUT_DIR_
     scrape_all_books(OUTPUT_DIR)

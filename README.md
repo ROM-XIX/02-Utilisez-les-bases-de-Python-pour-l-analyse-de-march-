@@ -23,9 +23,13 @@ les données à récolter sont les suivantes :
 # ce que le code fait :
 
 le code permet de récupérer l'index de l'ensemble des catégories du site https://books.toscrape.com 
+
 stock l'ensemble des liens de chaque page produit par catégorie.
+
 le code permet d'obtenir un csv par catégorie de livre.
+
 L'ensemble des éléments demandés est stocké sosu forme de tableau
+
 cf l'objectif du code [Link Text](#lobjectif-du-code-).
 
 Les images sont enregistrées dans un répertoire séparé du répertoire de csv.
@@ -55,12 +59,13 @@ l'arborescence est du type :
 # procédure d'utilisation :
 
 il faut créer un environement python
-récupérer le repo 
-puis installer le requirement du repo dans l'environement créé
-dans le fichier main changer le chemin stocké dans la variable "OUTPUT_DIR_"
-copier le chemin dans lequel vous souhaitez que les données extraites soient stokées sur votre PC.
-activer l'environement
-puis lancer le code python.
+
+1. récupérer le repo 
+2. puis installer le requirement du repo dans l'environement créé
+3. dans le fichier main changer le chemin stocké dans la variable "OUTPUT_DIR_"
+4. copier le chemin dans lequel vous souhaitez que les données extraites soient stokées sur votre PC.
+5. activer l'environement
+6. puis lancer le code python.
 
 
 # pour aller plus loint :
