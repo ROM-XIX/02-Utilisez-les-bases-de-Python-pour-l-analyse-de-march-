@@ -17,6 +17,8 @@ OUTPUT_DIR_ = (
 
 BASE_URL = "https://books.toscrape.com/"
 
+# - Fonctions d'extraction des datas
+
 
 def fetch_html(url):
     response = requests.get(url)
@@ -57,6 +59,8 @@ def extract_image_url(soup, title):
         return urljoin(BASE_URL, tag["src"].replace("../", ""))
     return None
 
+# - fonction de téléchargement d'image
+
 
 def download_image(url, title, image_dir):
     os.makedirs(image_dir, exist_ok=True)
@@ -66,6 +70,8 @@ def download_image(url, title, image_dir):
     with open(path, "wb") as f:
         f.write(response.content)
     return path
+
+# - fonction d'enregistrement en csv
 
 
 def save_to_csv(data, filename, headers):
@@ -77,6 +83,8 @@ def save_to_csv(data, filename, headers):
         if not file_exists:
             writer.writerow(headers)
         writer.writerow(data)
+
+# - fonction de scrape d'une page
 
 
 def scrape_book_page(url, image_dir, csv_file):
@@ -131,6 +139,8 @@ def scrape_book_page(url, image_dir, csv_file):
 
     save_to_csv(data, csv_file, headers)
 
+# - Fonction de récupération de l'ensemble des catégories
+
 
 def get_all_category_links():
     soup = fetch_html(BASE_URL)
@@ -141,6 +151,8 @@ def get_all_category_links():
         category_name = a.text.strip()
         category_links.append((category_name, full_url))
     return category_links
+
+# - Fonction de récupéraiton des liens de chaque livre dans une catégorie
 
 
 def get_all_book_links_in_category(category_url):
@@ -162,6 +174,9 @@ def get_all_book_links_in_category(category_url):
             category_url = None
     return book_links
 
+
+# - Fonction regroupant l'ensemble des instructions souhaité
+# c'est la voiture du code
 
 def scrape_all_books(output_dir):
     categories = get_all_category_links()
@@ -185,6 +200,9 @@ def scrape_all_books(output_dir):
 
 
 # === Lancement ===
+# c'est la clé de contact.
+# il est possible de déplacer le lancement du code
+# dans un autre fichier facilement.
 if __name__ == "__main__":
     OUTPUT_DIR = OUTPUT_DIR_
     scrape_all_books(OUTPUT_DIR)
