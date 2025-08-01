@@ -1,6 +1,9 @@
 # Environnement virtuel
 .env_oc_p02/
 
+#repertoir avec les datas extraites
+datas/
+
 # la documentation de travail
 *.pdf
 

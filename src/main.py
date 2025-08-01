@@ -1,3 +1,5 @@
+# version du code qui fait l'extraction des datas d'une page de livre
+
 import requests
 from bs4 import BeautifulSoup
 import csv
