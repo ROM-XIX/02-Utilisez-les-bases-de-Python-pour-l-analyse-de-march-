@@ -3,6 +3,8 @@
 
 #repertoir avec les datas extraites
 datas/
+datas2/
+datas3/
 
 # la documentation de travail
 *.pdf
@@ -13,3 +15,11 @@ datas/
 *.jpg
 *.jpeg
 *.html
+
+#fichiers perso en local
+src/main1.py
+src/main2.py
+src/main3.py
+
+# repertoire d'annex du cours
+Annexes_cours/
