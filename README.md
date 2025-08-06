@@ -65,7 +65,7 @@ enregistrez le fichier ZIP au chemin qu'il vous convient sur votre micro ordinat
 
 Puis extraire le zip. vous aurez l'ensembles des fichiers pour l'utilisation du code.
 
-## 2. il faut créer un environement python :
+## 2.  il faut créer un environement python :
 
 ### 2.1. <ins>Ouvrir un terminal</ins>
 Ouvrez une fenêtre de terminal sur votre système Linux.
@@ -120,10 +120,6 @@ une fois que vous aurez fini d'utiliser le code vous pourrez déactiver l'enviro
 deactivate
 ```
 
-### 2.x <ins></ins>
-### 2.x <ins></ins>
-### 2.x <ins></ins>
-
 ## 3. Choisir le chemin de stockage des données exportées:
 
 En lançant le code main.py, vous allez extraire de nombreux fichier **CSV** et **JPG**.
@@ -163,6 +159,8 @@ Dans votre terminal vous devriez voir apparètre les lignes ci-dessous suivie de
   -> Scraping : https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html
 ```
 
+Laisser le code tourner 
+
 # pour aller plus loint :
 
 - Il est possible d'ajouter une description à chaque fonction Python.
@@ -201,4 +199,3 @@ https://itexpert.fr/blog/extensions-vscode/
 
     - https://geekflare.com/fr/beautiful-soup-for-web-scraping-projects/
 
-    

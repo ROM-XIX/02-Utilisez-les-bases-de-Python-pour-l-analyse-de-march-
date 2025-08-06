@@ -1,12 +1,23 @@
-# version du code qui fait l'extraction des datas d'une page de livre
-# comme le code du main
-# restrucuté avec par fonction
+# version du code final,
+# Parcours l'ensemblde des catégories du site
+# et fait l'extraction de l'ensemble des données de
+# chaque livre, trié par catégorie.
 
 import requests
 from bs4 import BeautifulSoup
 import csv
 import re
 import os
+from urllib.parse import urljoin
+
+OUTPUT_DIR_ = (
+        "/home/athena6/Documents/OpenClasseRooms/"
+        "02_BaseDeDonnees/datas3/"
+    )
+
+BASE_URL = "https://books.toscrape.com/"
+
+# - Fonctions d'extraction des datas
 
 
 def fetch_html(url):
@@ -45,44 +56,39 @@ def extract_number_available(availability_text):
 def extract_image_url(soup, title):
     tag = soup.find("img", alt=title)
     if tag and "src" in tag.attrs:
-        return "https://books.toscrape.com/" + tag["src"].replace("../", "")
+        return urljoin(BASE_URL, tag["src"].replace("../", ""))
     return None
+
+# - fonction de téléchargement d'image
 
 
 def download_image(url, title, image_dir):
     os.makedirs(image_dir, exist_ok=True)
+    filename = f"{title}.jpg".replace("/", "-").replace(" ", "_")
+    path = os.path.join(image_dir, filename)
     response = requests.get(url)
-    image_path = os.path.join(image_dir, f"{title}.jpg")
-    with open(image_path, "wb") as f:
+    with open(path, "wb") as f:
         f.write(response.content)
-    return image_path
+    return path
+
+# - fonction d'enregistrement en csv
 
 
-def save_to_csv(data, filename):
-    headers = [
-        "Title",
-        "UPC",
-        "Price (excl. tax)",
-        "Price (incl. tax)",
-        "Tax",
-        "Availability",
-        "Number Available",
-        "Number of Reviews",
-        "Category",
-        "Rating",
-        "Description",
-        "Image URL"
-    ]
+def save_to_csv(data, filename, headers):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-    with open(filename, mode="w", newline="", encoding="utf-8") as f:
+    file_exists = os.path.isfile(filename)
+
+    with open(filename, mode="a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(headers)
+        if not file_exists:
+            writer.writerow(headers)
         writer.writerow(data)
 
+# - fonction de scrape d'une page
 
-def scrape_book_page(url, image_dir, output_csv):
+
+def scrape_book_page(url, image_dir, csv_file):
     soup = fetch_html(url)
-
     title = extract_title(soup)
     upc = extract_text(soup, "UPC")
     price_excl_tax = extract_text(soup, "Price (excl. tax)")
@@ -96,13 +102,11 @@ def scrape_book_page(url, image_dir, output_csv):
     num_available = extract_number_available(availability)
     image_url = extract_image_url(soup, title)
 
+    # Télécharger image
     if image_url:
-        image_path = download_image(image_url, title, image_dir)
-        print(f"Image enregistrée dans : {image_path}")
-    else:
-        image_url = "N/A"
-        print("Image non trouvée.")
+        download_image(image_url, title, image_dir)
 
+    # Préparer les données
     data = [
         title,
         upc,
@@ -115,22 +119,90 @@ def scrape_book_page(url, image_dir, output_csv):
         category,
         rating,
         description,
-        image_url
+        image_url or "N/A",
     ]
 
-    save_to_csv(data, output_csv)
-    print(f"Données extraites et sauvegardées dans '{output_csv}'")
+    headers = [
+        "Title",
+        "UPC",
+        "Price (excl. tax)",
+        "Price (incl. tax)",
+        "Tax",
+        "Availability",
+        "Number Available",
+        "Number of Reviews",
+        "Category",
+        "Rating",
+        "Description",
+        "Image URL",
+    ]
+
+    save_to_csv(data, csv_file, headers)
+
+# - Fonction de récupération de l'ensemble des catégories
 
 
-# === MAIN EXECUTION ===
+def get_all_category_links():
+    soup = fetch_html(BASE_URL)
+    category_links = []
+    for a in soup.select("ul.nav-list ul li a"):
+        href = a.get("href")
+        full_url = urljoin(BASE_URL, href)
+        category_name = a.text.strip()
+        category_links.append((category_name, full_url))
+    return category_links
+
+# - Fonction de récupéraiton des liens de chaque livre dans une catégorie
+
+
+def get_all_book_links_in_category(category_url):
+    book_links = []
+    while category_url:
+        soup = fetch_html(category_url)
+        for h3 in soup.select("h3 a"):
+            href = h3.get("href")
+            full_url = urljoin(
+                category_url, href
+                ).replace("../../../", BASE_URL + "catalogue/")
+            book_links.append(full_url)
+
+        next_button = soup.select_one("li.next a")
+        if next_button:
+            next_href = next_button.get("href")
+            category_url = urljoin(category_url, next_href)
+        else:
+            category_url = None
+    return book_links
+
+
+# - Fonction regroupant l'ensemble des instructions souhaité
+# c'est la voiture du code
+
+def scrape_all_books(output_dir):
+    categories = get_all_category_links()
+
+    for category_name, category_url in categories:
+        print(f"\n* Catégorie : {category_name}")
+
+        # Dossiers pour cette catégorie
+        category_folder = os.path.join(output_dir, "datas", category_name)
+        image_dir = os.path.join(output_dir, "images", category_name)
+        csv_file = os.path.join(category_folder, "books.csv")
+
+        book_urls = get_all_book_links_in_category(category_url)
+
+        for book_url in book_urls:
+            print(f"  -> Scraping : {book_url}")
+            try:
+                scrape_book_page(book_url, image_dir, csv_file)
+            except Exception as e:
+                print(f" !!  Erreur avec {book_url} : {e}")
+
+
+# === Lancement ===
+# c'est la clé de contact.
+# il est possible de déplacer le lancement du code
+# dans un autre fichier facilement.
 if __name__ == "__main__":
-    url = "https://books.toscrape.com/catalogue/dune-dune-1_151/index.html"
-    image_dir = (
-        "/home/athena6/Documents/OpenClasseRooms/"
-        "02_BaseDeDonnees/images"
-    )
-    output_csv = (
-        "/home/athena6/Documents/OpenClasseRooms/02_BaseDeDonnees/"
-        "datas/a_light_in_the_attic.csv"
-    )
-    scrape_book_page(url, image_dir, output_csv)
+    OUTPUT_DIR = OUTPUT_DIR_
+    scrape_all_books(OUTPUT_DIR)
