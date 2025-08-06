@@ -18,10 +18,10 @@ datas3/
 
 #fichiers perso en local
 src/main1.py
-# src/main2.py
-# src/main3.py
+src/main2.py
+src/main3.py
 
 # repertoire d'annex du cours
 Annexes_cours/
-Livrable/*
+Livrables/*
 Demande/
