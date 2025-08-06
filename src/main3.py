@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 
 OUTPUT_DIR_ = (
         "/home/athena6/Documents/OpenClasseRooms/"
-        "02_BaseDeDonnees/datas"
+        "02_BaseDeDonnees/datas3/"
     )
 
 BASE_URL = "https://books.toscrape.com/"
