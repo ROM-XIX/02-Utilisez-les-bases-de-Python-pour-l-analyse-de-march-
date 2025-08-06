@@ -1,4 +1,6 @@
 # version du code qui fait l'extraction des datas d'une page de livre
+# comme le code du main
+# restrucuté avec par fonction
 
 import requests
 from bs4 import BeautifulSoup
@@ -6,133 +8,129 @@ import csv
 import re
 import os
 
-# URL d'une page produit spécifique - product_page_url
-url = (
-  "https://books.toscrape.com/catalogue/"
-  "dune-dune-1_151/index.html"
-)
-# url = (
-#     "https://books.toscrape.com/catalogue/"
-#     "a-light-in-the-attic_1000/index.html"
-# )
 
-response = requests.get(url)
-soup = BeautifulSoup(response.content, "html.parser")
+def fetch_html(url):
+    response = requests.get(url)
+    return BeautifulSoup(response.content, "html.parser")
 
-# - Extraire les données - #
 
-# title
-title = soup.find("h1").text
+def extract_text(soup, th_name):
+    tag = soup.find("th", string=th_name)
+    return tag.find_next_sibling("td").text if tag else "N/A"
 
-# prix HT - price_excluding_tax
-price_excl_tax = (
-    soup.find("th", string="Price (excl. tax)").find_next_sibling("td").text
-)
 
-# prix TTC - price_including_tax
-price_incl_tax = (
-    soup.find("th", string="Price (incl. tax)").find_next_sibling("td").text
-)
+def extract_title(soup):
+    return soup.find("h1").text
 
-# tax
-tax = soup.find("th", string="Tax").find_next_sibling("td").text
 
-# number_available
-availability = (
-    soup.find("th", string="Availability").find_next_sibling("td").text.strip()
-)
+def extract_description(soup):
+    tag = soup.select_one("#product_description ~ p")
+    return tag.text.strip() if tag else "N/A"
 
-# universal_ product_code (upc)
-upc = soup.find("th", string="UPC").find_next_sibling("td").text
 
-# nbr de review
-num_reviews = soup.find(
-    "th",
-    string="Number of reviews").find_next_sibling("td").text
+def extract_category(soup):
+    return soup.select("ul.breadcrumb li")[2].text.strip()
 
-# Description - product_description
-description_tag = soup.select_one("#product_description ~ p")
-description = description_tag.text if description_tag else "N/A"
 
-# Catégorie - category
-category = soup.select("ul.breadcrumb li")[2].text.strip()
+def extract_rating(soup):
+    tag = soup.select_one("p.star-rating")
+    return tag.get("class")[1] if tag else "N/A"
 
-# Note - review_rating
-rating_tag = soup.select_one("p.star-rating")
-rating = rating_tag.get("class")[1] if rating_tag else "N/A"
 
-# Nettoyage de la disponibilité
-match = re.search(r"\((\d+) available\)", availability)
-num_available = match.group(1) if match else "N/A"
+def extract_number_available(availability_text):
+    match = re.search(r"\((\d+) available\)", availability_text)
+    return match.group(1) if match else "N/A"
 
-# Image - récupération par alt = title
-img_tag = soup.find("img", alt=title)
-image_url = img_tag["src"] if img_tag else None
 
-if image_url:
-    image_url_ = "https://books.toscrape.com/" + image_url.replace("../", "")
+def extract_image_url(soup, title):
+    tag = soup.find("img", alt=title)
+    if tag and "src" in tag.attrs:
+        return "https://books.toscrape.com/" + tag["src"].replace("../", "")
+    return None
 
-    # Créer le dossier images s'il n'existe pas
+
+def download_image(url, title, image_dir):
+    os.makedirs(image_dir, exist_ok=True)
+    response = requests.get(url)
+    image_path = os.path.join(image_dir, f"{title}.jpg")
+    with open(image_path, "wb") as f:
+        f.write(response.content)
+    return image_path
+
+
+def save_to_csv(data, filename):
+    headers = [
+        "Title",
+        "UPC",
+        "Price (excl. tax)",
+        "Price (incl. tax)",
+        "Tax",
+        "Availability",
+        "Number Available",
+        "Number of Reviews",
+        "Category",
+        "Rating",
+        "Description",
+        "Image URL"
+    ]
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+        writer.writerow(data)
+
+
+def scrape_book_page(url, image_dir, output_csv):
+    soup = fetch_html(url)
+
+    title = extract_title(soup)
+    upc = extract_text(soup, "UPC")
+    price_excl_tax = extract_text(soup, "Price (excl. tax)")
+    price_incl_tax = extract_text(soup, "Price (incl. tax)")
+    tax = extract_text(soup, "Tax")
+    availability = extract_text(soup, "Availability")
+    num_reviews = extract_text(soup, "Number of reviews")
+    description = extract_description(soup)
+    category = extract_category(soup)
+    rating = extract_rating(soup)
+    num_available = extract_number_available(availability)
+    image_url = extract_image_url(soup, title)
+
+    if image_url:
+        image_path = download_image(image_url, title, image_dir)
+        print(f"Image enregistrée dans : {image_path}")
+    else:
+        image_url = "N/A"
+        print("Image non trouvée.")
+
+    data = [
+        title,
+        upc,
+        price_excl_tax,
+        price_incl_tax,
+        tax,
+        availability,
+        num_available,
+        num_reviews,
+        category,
+        rating,
+        description,
+        image_url
+    ]
+
+    save_to_csv(data, output_csv)
+    print(f"Données extraites et sauvegardées dans '{output_csv}'")
+
+
+# === MAIN EXECUTION ===
+if __name__ == "__main__":
+    url = "https://books.toscrape.com/catalogue/dune-dune-1_151/index.html"
     image_dir = (
         "/home/athena6/Documents/OpenClasseRooms/"
         "02_BaseDeDonnees/images"
     )
-    os.makedirs(image_dir, exist_ok=True)
-
-    # Télécharger et sauvegarder l'image
-    image_response = requests.get(image_url_)
-    image_path = os.path.join(image_dir, f"{title}.jpg")
-
-    with open(image_path, "wb") as img_file:
-        img_file.write(image_response.content)
-
-    print(f"Image enregistrée dans : {image_path}")
-else:
-    image_url = "N/A"
-    print("Image non trouvée.")
-
-# Nom du fichier de sortie
-filename = (
-    "/home/athena6/Documents/OpenClasseRooms/02_BaseDeDonnees/datas/"
-    "a_light_in_the_attic.csv"
-)
-
-# Enregistrement dans un CSV
-with open(filename, mode="w", newline="", encoding="utf-8") as f:
-    writer = csv.writer(f)
-
-    writer.writerow(
-        [
-            "Title",
-            "UPC",
-            "Price (excl. tax)",
-            "Price (incl. tax)",
-            "Tax",
-            "Availability",
-            "Number Available",
-            "Number of Reviews",
-            "Category",
-            "Rating",
-            "Description",
-            "Image URL"
-        ]
+    output_csv = (
+        "/home/athena6/Documents/OpenClasseRooms/02_BaseDeDonnees/"
+        "datas/a_light_in_the_attic.csv"
     )
-
-    writer.writerow(
-        [
-            title,
-            upc,
-            price_excl_tax,
-            price_incl_tax,
-            tax,
-            availability,
-            num_available,
-            num_reviews,
-            category,
-            rating,
-            description,
-            image_url
-        ]
-    )
-
-print(f"Données extraites et sauvegardées dans '{filename}'")
+    scrape_book_page(url, image_dir, output_csv)
