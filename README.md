@@ -1,9 +1,9 @@
 
 # Context : 
 
-Dans le cadre de la formation OpenClassRooms, pour la formation de developpeur logiciel python.
+Dans le cadre de la formation OpenClassRooms, pour la formation de développeur logiciel Python.
 
-Le projet numéro 2 demande de pouvoir extraire l'ensemble des données d'un site de ventes de livre en ligne.
+Le projet numéro 2 demande de pouvoir extraire l'ensemble des données d'un site de vente de livres en ligne.
 
 # L'objectif du code :
 
@@ -25,14 +25,14 @@ les données du site à récolter sont les suivantes :
 
 le code récupérer l'index de l'ensemble des catégories du site https://books.toscrape.com sur la page d'index. 
 
-puis parcours chaque livre de chaque catégorie, pendant ce partage il ce passe 4 choses:
+puis parcourt chaque livre de chaque catégorie, pendant ce parcours il ce passe 4 choses:
 
-1. on crée un répertoire pour stocker les CSV des datas produit, par catégorie
-2. on crée un repertoire pour stocker les images produit, par catégorie
-3. on crée un CSV par catégorie qui contient l'ensemble des données demandé ***l'objectif du code*** [Link Text](#lobjectif-du-code-).
-4. on récupère le lien de l'image du produit, et on enregistre cette image dans le répertoire indiqué.
+1. On crée un répertoire pour stocker les CSV des données produit, par catégorie.
+2. On crée un repertoire pour stocker les images produit, par catégorie.
+3. On crée un CSV par catégorie qui contient l'ensemble des données demandé ***l'objectif du code*** [Link Text](#lobjectif-du-code-).
+4. On récupère le lien de l'image du produit, et on enregistre cette image dans le répertoire indiqué.
 
-Voici une représentation de l'arborescence généré :
+Voici une représentation de l'arborescence générée :
 
 ```
 02_BaseDeDonnees/
@@ -60,12 +60,12 @@ Voici une représentation de l'arborescence généré :
 
 Téléchargé le github depuis le lien du dépot github.
 
-Pour cela une fois sur la page du dépot github, dans la barre au dessous du nom du dépot, cliquez sur le bouton **<>CODE** et il devrait y avoir dnas l'onglet local, le bouton **DownloadZIP**
-enregistrez le fichier ZIP au chemin qu'il vous convient sur votre micro ordinateur.
+Pour cela une fois sur la page du dépot github, dans la barre au dessous du nom du dépot, cliquez sur le bouton **<>CODE** puis, dans l’onglet local, cliquez sur  **DownloadZIP**,
+enregistrez le fichier ZIP à l’emplacement souhaité sur votre ordinateur.
 
-Puis extraire le zip. vous aurez l'ensembles des fichiers pour l'utilisation du code.
+Puis extraire le zip. Vous aurez l'ensembles des fichiers pour l'utilisation du code.
 
-## 2.  il faut créer un environement python :
+## 2.  Créer un environnement Python :
 
 ### 2.1. <ins>Ouvrir un terminal</ins>
 Ouvrez une fenêtre de terminal sur votre système Linux.
@@ -75,13 +75,13 @@ Vérifiez que Python 3 est installé en exécutant :
 ```
 python3 --version
 ```
-Vous devriez voir une version du type Python 3.x.x.
-Si ce n’est pas le cas, installez Python 3 en utilisant la commande adaptée à votre distribution (par exemple : sudo apt install python3).
+Vous devriez voir une version du type ` Python 3.x.x. `
+Si ce n’est pas le cas, installez Python 3 avec la commande adaptée à votre distribution (par exemple : sudo apt install python3).
 
 ### 2.3 <ins>Créer un environnement dans le projet</ins>
-Afin de ne pas corrompre votre systeme, nous allons créer un environement dans le project.
+Afin de ne pas corrompre votre systeme, nous allons créer un environnement dans le project.
 
-Aller dans le repertoire projet avec la commande :
+Aller dans le repertoire du projet avec la commande :
 ```
 cd /mon_chemin_d_acces_local/../02-Utilisez-les-bases-de-Python-pour-l-analyse-de-march--main
 ```
@@ -110,21 +110,21 @@ pip list
 Vous ne devriez voir que `pip`, `setuptools` et `wheel`.
 
 ### 2.6 <ins>Installer les dépendances du projet</ins>
-Installez les dépendances utilses au bon fonctionnement du copde avec la commande suivante :
+Installez les dépendances utiles au bon fonctionnement du copde avec la commande suivante :
 ```
 pip install -r requirements.txt
 ```
-### 2.7 <ins>Pour déactiver l'environement</ins>
-une fois que vous aurez fini d'utiliser le code vous pourrez déactiver l'environement avec la commande suivant:
+### 2.7 <ins>Pour déactiver l'environnement</ins>
+une fois que vous aurez fini d'utiliser le code vous pourrez déactiver l'environnement avec la commande suivant:
 ```
 deactivate
 ```
 
 ## 3. Choisir le chemin de stockage des données exportées:
 
-En lançant le code main.py, vous allez extraire de nombreux fichier **CSV** et **JPG**.
-Afin de maitriser ou ces fichiers seront stocker sur votre PC, il est important de choisir l'emplacement d'exportation des fichiers. Pour cela, il faut remplacer le chemin d'accès réseaux. 
-En ouvrant le fichier main.py avec un editeur de text ou votre IDE, changer la vlaeur de variable **OUTPUT_DIR_**. choisir le bon chemin d'accés réseaux.
+En lançant le code main.py, vous allez extraire de nombreux fichiers **CSV** et **JPG**.
+Afin de maitriser ou ces fichiers seront stockés sur votre PC, il est important de choisir l'emplacement d'exportation des fichiers. Pour cela, il faut remplacer le chemin d'accès réseaux. 
+En ouvrant le fichier main.py avec un editeur de text ou votre IDE, changer la valeur de la variable **OUTPUT_DIR_**. pour choisir le bon chemin d'accès.
 ```
 # version du code final,
 # Parcours l'ensemblde des catégories du site
@@ -145,12 +145,12 @@ OUTPUT_DIR_ = (
 
 ## 4. Lancer le code python.
 
-Nous pouvons lancer l'exécution du code python du fichier `main.py`. Pour cela dans le terminal lancer la commande suivante :
+Nous pouvons lancer l'exécution du code python du fichier `main.py`. Pour cela dans le terminal exécutez la commande suivante :
 
 ```
 python3 /mon_chemin_d_acces_local/../02-Utilisez-...de-march--main/main.py
 ```
-Dans votre terminal vous devriez voir apparètre les lignes ci-dessous suivie de nouvelle ligne de code, cela veut dire que le code tourne et est entrain de télécharger les données depuis le site https://books.toscrape.com/.
+Dans votre terminal vous devriez voir apparaître les lignes ci-dessous suivies de nouvelles lignes de code. Cela signifie que le code tourne et est en train de télécharger les données depuis le site https://books.toscrape.com/.
 
 ```
 * Catégorie : Travel

@@ -152,7 +152,7 @@ def get_all_category_links():
         category_links.append((category_name, full_url))
     return category_links
 
-# - Fonction de récupéraiton des liens de chaque livre dans une catégorie
+# - Fonction de récupératoin des liens de chaque livre dans une catégorie
 
 
 def get_all_book_links_in_category(category_url):
