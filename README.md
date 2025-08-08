@@ -40,18 +40,21 @@ Voici une représentation de l'arborescence générée :
 │
 ├── src/
 │   └── main3.py
-├── datas/
-│   ├── Travel/
-│   │   └── books.csv
-│   ├── Poetry/
-│   │   └── books.csv
-│   └── ...
-├── images/
-│   ├── Travel/
-│   │   └── book1.jpg
-│   ├── Poetry/
-│   │   └── book2.jpg
-│   └── ...
+│
+├── datas
+│     ├─── datas/
+│     │      ├── Travel/
+│     │      │   └── books.csv
+│     │      ├── Poetry/
+│     │      │   └── books.csv
+│     │      └── ...
+│     └── images/
+│           ├── Travel/
+│           │   └── book1.jpg
+│           ├── Poetry/
+│           │   └── book2.jpg
+│           └── ...
+└── ...
 ```
 
 # procédure d'utilisation :
